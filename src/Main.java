@@ -1,34 +1,34 @@
+import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
         String[] products = {"Хлеб", "Молоко", "Мясо"};
         int[] prices = {50, 90, 350};
-
-        System.out.println("Список возможных товаров для покупки");
-        for (int i = 0; i < products.length; i++) {
-            System.out.println(products[i] + " " + prices[i] + " руб/шт.");
-        }
-
+        File file = new File("basket.txt");
+        Basket basket = new Basket(prices, products, file);
         Scanner scanner = new Scanner(System.in);
-        int[] basket = new int[products.length];
 
         while (true) {
+            basket.showProducts();
             System.out.println("Введите номер товара и колличество, или введите end");
             String input = scanner.nextLine();
+
             if ("end".equals(input)) {
                 break;
             }
-
 
             String[] parts = input.split(" ");
             if (parts.length != 2) {
                 System.out.println("Неверный ввод! Попробуйте еще раз.");
                 continue;
             }
+
             try {
-                if ((Integer.parseInt(parts[0]) > products.length) | (Integer.parseInt(parts[0]) < 1)) {
+                if ((Integer.parseInt(parts[0]) > basket.getLength())
+                        | (Integer.parseInt(parts[0]) < 1)) {
                     System.out.println("Вы ввели не существующий товар! Попробуйте еще раз.");
                     continue;
                 }
@@ -37,22 +37,17 @@ public class Main {
                     System.out.println("Вы ввели отрицательное колличество товаров! Попробуйте еще раз.");
                     continue;
                 }
-                basket[(Integer.parseInt(parts[0]) - 1)] += Integer.parseInt(parts[1]);
+
+                basket.addToCart(Integer.parseInt(parts[0]) - 1, Integer.parseInt(parts[1]));
+                basket.saveTxt(file);
+
             } catch (NumberFormatException exception) {
                 System.out.println("Введены некорректные данные! Попробуйте еще раз");
-            }
-        }
 
-        int sum = 0;
-        System.out.println("Ваша корзина:");
-        for (int i = 0; i < basket.length; i++) {
-            if (basket[i] != 0) {
-                System.out.println(products[i] + " " + basket[i] + " шт. " + prices[i] + " руб/шт " +
-                        (prices[i] * basket[i]) + " руб в сумме");
-                sum += prices[i] * basket[i];
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
             }
+            basket.printCart();
         }
-        System.out.println("Итого " + sum + " руб");
-
     }
 }
