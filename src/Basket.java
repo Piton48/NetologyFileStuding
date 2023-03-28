@@ -5,19 +5,12 @@ public class Basket {
     protected String[] products;
     protected int[] basket;
 
-    public Basket(int[] prices, String[] products, File file) {
+    public Basket(int[] prices, String[] products, File file) throws IOException, ClassNotFoundException {
         this.prices = prices;
         this.products = products;
         this.basket = new int[prices.length];
         if (file.exists()) {
-            String[] text = loadFromTxtFile(file).split(" ");
-            int y = 0;
-            for (int i = 0; i < text.length - 1; i++) {
-                if (i % 2 != 0) {
-                    this.basket[y] = Integer.parseInt(text[i]);
-                    y++;
-                }
-            }
+            loadFromBinFile(file);
             printCart();
         }
     }
@@ -37,28 +30,18 @@ public class Basket {
         this.basket[productNum] += amount;
     }
 
-    public void saveTxt(File file) throws Exception {
-        StringBuilder text = new StringBuilder();
-        for (int i = 0; i < this.basket.length; i++) {
-            text.append(i).append(" ").append(basket[i]).append(" ");
+    public void saveBin(File file) throws IOException {
+        try (FileOutputStream fos = new FileOutputStream(file);
+             ObjectOutputStream oos = new ObjectOutputStream(fos)){
+            oos.writeObject(this.basket);
         }
-        PrintWriter out = new PrintWriter(file);
-        out.println(text);
-        out.close();
-        file.createNewFile();
     }
 
-    static String loadFromTxtFile(File textFile) {
-        StringBuilder text = new StringBuilder();
-        try (Reader reader = new FileReader(textFile)) {
-            int t;
-            while ((t = reader.read()) != -1) {
-                text.append((char) t);
-            }
-        } catch (IOException e) {
-            System.out.println(e.getMessage());
+    public void loadFromBinFile(File file) throws IOException, ClassNotFoundException {
+        try (FileInputStream fis = new FileInputStream(file);
+             ObjectInputStream ois = new ObjectInputStream(fis)){
+            this.basket = (int[]) ois.readObject();
         }
-        return text.toString();
     }
 
     public void printCart() {
