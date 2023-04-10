@@ -1,9 +1,10 @@
+package ru.netology;
+
 import java.io.File;
-import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args){
 
         String[] products = {"Хлеб", "Молоко", "Мясо"};
         int[] prices = {50, 90, 350};
