@@ -7,11 +7,17 @@ public class Basket {
     protected String[] products;
     protected int[] basket;
 
+    public Basket(int[] prices, String[] products){
+        this.prices = prices;
+        this.products = products;
+        this.basket = new int[prices.length];
+    }
+
     public Basket(int[] prices, String[] products, File file) {
         this.prices = prices;
         this.products = products;
         this.basket = new int[prices.length];
-        if (file.exists()) {
+        if (file.exists() & file.getName().endsWith(".txt")) {
             String[] text = loadFromTxtFile(file).split(" ");
             int y = 0;
             for (int i = 0; i < text.length - 1; i++) {
@@ -40,14 +46,17 @@ public class Basket {
     }
 
     public void saveTxt(File file) throws Exception {
-        StringBuilder text = new StringBuilder();
-        for (int i = 0; i < this.basket.length; i++) {
-            text.append(i).append(" ").append(basket[i]).append(" ");
+        if (file.getName().endsWith(".txt")) {
+            StringBuilder text = new StringBuilder();
+            for (int i = 0; i < this.basket.length; i++) {
+                text.append(i).append(" ").append(basket[i]).append(" ");
+            }
+            PrintWriter out = new PrintWriter(file);
+            out.println(text);
+            out.close();
+            file.createNewFile();
         }
-        PrintWriter out = new PrintWriter(file);
-        out.println(text);
-        out.close();
-        file.createNewFile();
+
     }
 
     static String loadFromTxtFile(File textFile) {

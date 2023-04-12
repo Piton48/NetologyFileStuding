@@ -8,8 +8,10 @@ public class Main {
 
         String[] products = {"Хлеб", "Молоко", "Мясо"};
         int[] prices = {50, 90, 350};
-        File file = new File("basket.txt");
-        Basket basket = new Basket(prices, products, file);
+        File txtFile = new File("basket.txt");
+        File logFile = new File("log.csv");
+        Basket basket = new Basket(prices, products);
+        ClientLog log = new ClientLog();
         Scanner scanner = new Scanner(System.in);
 
         while (true) {
@@ -40,7 +42,8 @@ public class Main {
                 }
 
                 basket.addToCart(Integer.parseInt(parts[0]) - 1, Integer.parseInt(parts[1]));
-                basket.saveTxt(file);
+                log.log(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
+                basket.saveTxt(txtFile);
 
             } catch (NumberFormatException exception) {
                 System.out.println("Введены некорректные данные! Попробуйте еще раз");
@@ -49,6 +52,7 @@ public class Main {
                 System.out.println(e.getMessage());
             }
             basket.printCart();
+            log.exportAsCSV(logFile);
         }
     }
 }
