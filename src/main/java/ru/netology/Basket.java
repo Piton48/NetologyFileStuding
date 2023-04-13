@@ -10,28 +10,23 @@ import java.io.*;
 
 
 public class Basket {
-    protected static int[] prices;
-    protected static String[] products;
-    protected static int[] basket;
+    protected int[] prices;
+    protected String[] products;
+    protected int[] basket;
     protected Config config = new Config(new File("shop.xml"));
 
-    public Basket(int[] prices, String[] products) throws IOException, ParserConfigurationException, SAXException {
-        Basket.prices = prices;
-        Basket.products = products;
-        basket = new int[prices.length];
-    }
-
     public Basket(int[] prices, String[] products, File file) throws IOException, ParserConfigurationException, SAXException {
-        Basket.prices = prices;
-        Basket.products = products;
+        this.prices = prices;
+        this.products = products;
+        this.basket = new int[prices.length];
         if (config.readConfig("load", "enabled").equals("true")) {
             if (config.readConfig("load", "format").equals("text")) loadFromTxtFile(file);
-            if (config.readConfig("load", "format").equals("json")) ;
+            if (config.readConfig("load", "format").equals("json")) loadFromJsonFile(file);
         }
     }
 
     public int getLength() {
-        return basket.length;
+        return this.basket.length;
     }
 
     public void showProducts() {
@@ -58,7 +53,7 @@ public class Basket {
         }
     }
 
-    void loadFromTxtFile(File textFile) {
+    public void loadFromTxtFile(File textFile) {
         if (textFile.exists()) {
             StringBuilder text = new StringBuilder();
             try (Reader reader = new FileReader(textFile)) {
@@ -81,10 +76,10 @@ public class Basket {
         }
     }
 
-    public static void printCart() {
+    public void printCart() {
         int sum = 0;
         System.out.println("Ваша корзина:");
-        for (int i = 0; i < basket.length; i++) {
+        for (int i = 0; i < getLength(); i++) {
             if (basket[i] != 0) {
                 System.out.println(products[i] + " " + basket[i] + " шт. " + prices[i] + " руб/шт " +
                         (prices[i] * basket[i]) + " руб. в сумме");
