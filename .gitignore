@@ -1,7 +1,8 @@
 *.iml
 .idea
-/out/
-/target/
-basket.txt
+out/
+target/
+*.txt
 *.bin
 *.csv
+*.json

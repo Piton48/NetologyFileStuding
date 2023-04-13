@@ -1,16 +1,22 @@
 package ru.netology;
 
+import org.xml.sax.SAXException;
+
+import javax.xml.parsers.ParserConfigurationException;
 import java.io.File;
+import java.io.IOException;
 import java.util.Scanner;
 
 public class Main {
-    public static void main(String[] args){
+    public static void main(String[] args) throws IOException
+            , ParserConfigurationException, SAXException {
 
+        Config config = new Config(new File("shop.xml"));
         String[] products = {"Хлеб", "Молоко", "Мясо"};
         int[] prices = {50, 90, 350};
-        File txtFile = new File("basket.txt");
-        File logFile = new File("log.csv");
-        Basket basket = new Basket(prices, products);
+        File logFile = new File(config.readConfig("log", "fileName"));
+        Basket basket = new Basket(prices, products
+                , new File(config.readConfig("load", "fileName")));
         ClientLog log = new ClientLog();
         Scanner scanner = new Scanner(System.in);
 
@@ -42,8 +48,18 @@ public class Main {
                 }
 
                 basket.addToCart(Integer.parseInt(parts[0]) - 1, Integer.parseInt(parts[1]));
+
+                if (config.readConfig("save", "enabled").equals("true")) {
+                    if (config.readConfig("save", "format").equals("json")) {
+                        basket.saveJson(new File(config.readConfig("save", "fileName")));
+                    }
+                    if (config.readConfig("save", "format").equals("text")) {
+                        basket.saveTxt(new File(config.readConfig("save", "fileName")));
+                    }
+                }
+
                 log.log(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]));
-                basket.saveTxt(txtFile);
+
 
             } catch (NumberFormatException exception) {
                 System.out.println("Введены некорректные данные! Попробуйте еще раз");
@@ -52,7 +68,10 @@ public class Main {
                 System.out.println(e.getMessage());
             }
             basket.printCart();
-            log.exportAsCSV(logFile);
         }
+
+        if (config.readConfig("log", "enabled").equals("true"))
+            log.exportAsCSV(logFile);
     }
+
 }
